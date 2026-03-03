@@ -3,15 +3,15 @@ const createElement = (arr) => {
   return htmlElement.join(" ");
 };
 
-const manageSpinner=(status)=>{
-if(status == true){
-    document.getElementById('spinner').classList.remove('hidden')
-    document.getElementById('word-container').classList.add('hidden')
-}else{
-    document.getElementById('spinner').classList.add('hidden')
-    document.getElementById('word-container').classList.remove('hidden')
-}
-}
+const manageSpinner = (status) => {
+  if (status == true) {
+    document.getElementById("spinner").classList.remove("hidden");
+    document.getElementById("word-container").classList.add("hidden");
+  } else {
+    document.getElementById("spinner").classList.add("hidden");
+    document.getElementById("word-container").classList.remove("hidden");
+  }
+};
 
 const loadLessons = () => {
   fetch("https://openapi.programming-hero.com/api/levels/all")
@@ -25,7 +25,7 @@ const removeActive = () => {
 };
 
 const loadLabelWord = (id) => {
-    manageSpinner(true)
+  manageSpinner(true);
   const url = `https://openapi.programming-hero.com/api/level/${id}`;
   fetch(url)
     .then((res) => res.json())
@@ -60,10 +60,10 @@ const displayLevelWords = (words) => {
     <div class="text-xl md:text-2xl font-bangla">"${word.meaning ? word.meaning : "অর্থ পাওয়া যায়নি"} / ${word.pronunciation ? word.pronunciation : "pronunciation পাওয়া যায়নি"}"</div>
 
     <div class="flex justify-between items-center">
-      <button
+      <button onclick="loadWordDetails(${word.id})"
         class="btn bg-[#1A91FF15] hover:bg-[#1A91FF80] hover:rounded-full w-10 h-10"
       >
-        <i onclick="loadWordDetails(${word.id})" class="fa-solid fa-circle-info"></i>
+        <i  class="fa-solid fa-circle-info"></i>
       </button>
       <button
         class="btn bg-[#1A91FF15] hover:bg-[#1A91FF80] hover:rounded-full w-10 h-10"
@@ -75,7 +75,7 @@ const displayLevelWords = (words) => {
     `;
     wordContainer.append(card);
   });
-  manageSpinner(false)
+  manageSpinner(false);
 };
 
 const loadWordDetails = async (id) => {
@@ -84,22 +84,6 @@ const loadWordDetails = async (id) => {
   const details = await res.json();
   displayWordsDetails(details.data);
 };
-
-// {
-//     "status": true,
-//     "message": "successfully fetched a word details",
-//     "data": {
-//         "word": "Abundant",
-//         "meaning": null,
-//         "pronunciation": "অবানডান্ট",
-//         "level": 3,
-//         "sentence": "Water is abundant in rainy seasons.",
-//         "points": 3,
-//         "synonyms": [],
-//         "id": 1
-//     }
-// }
-
 const displayWordsDetails = (word) => {
   console.log(word);
   console.log(word.word);
@@ -149,3 +133,19 @@ const displayLessons = (lessons) => {
 };
 
 loadLessons();
+document.getElementById("btn-search").addEventListener("click", () => {
+    removeActive()
+  const input = document.getElementById("input-search");
+  const searchValue = input.value.trim().toLowerCase();
+  console.log(searchValue);
+  fetch("https://openapi.programming-hero.com/api/words/all")
+    .then((res) => res.json())
+    .then((data) => {
+      const allWords = data.data;
+      console.log(data);
+      const filterWords = allWords.filter((word) =>
+        word.word.toLowerCase().includes(searchValue),
+      );
+      displayLevelWords(filterWords)
+    });
+});
