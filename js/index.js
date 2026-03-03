@@ -1,30 +1,35 @@
+const createElement = (arr) => {
+  const htmlElement = arr.map((el) => `<span>${el}</span>`);
+  return htmlElement.join(" ");
+};
+
 const loadLessons = () => {
   fetch("https://openapi.programming-hero.com/api/levels/all")
     .then((res) => res.json())
     .then((data) => displayLessons(data.data));
 };
 
-const removeActive = ()=>{
-    const lessonButtons = document.querySelectorAll('.lesson-btn')
-    lessonButtons.forEach(btn => btn.classList.remove('active'));
-}
+const removeActive = () => {
+  const lessonButtons = document.querySelectorAll(".lesson-btn");
+  lessonButtons.forEach((btn) => btn.classList.remove("active"));
+};
 
 const loadLabelWord = (id) => {
   const url = `https://openapi.programming-hero.com/api/level/${id}`;
   fetch(url)
     .then((res) => res.json())
     .then((data) => {
-        removeActive()
-        const clickBtn = document.getElementById(`lesson-btn-${id}`)
-        clickBtn.classList.add('active')
-        displayLevelWords(data.data)
+      removeActive();
+      const clickBtn = document.getElementById(`lesson-btn-${id}`);
+      clickBtn.classList.add("active");
+      displayLevelWords(data.data);
     });
 };
 
 const displayLevelWords = (words) => {
   const wordContainer = document.getElementById("word-container");
   wordContainer.innerHTML = "";
-  if(words.length ==0){
+  if (words.length == 0) {
     wordContainer.innerHTML = `
     <div class="text-center col-span-full rounded-xl space-y-2 md:space-y-4 ">
     <img class="mx-auto" src="./assets/alert-error.png"/>
@@ -34,20 +39,20 @@ const displayLevelWords = (words) => {
     `;
   }
 
-  words.forEach(word => {
+  words.forEach((word) => {
     // console.log(word)
-    const card = document.createElement('div')
+    const card = document.createElement("div");
     card.innerHTML = `
     <div class="bg-white text-center py-8 px-5 md:py-12 rounded space-y-4">
-    <h2 class="font-bold text-xl md:text-2xl">${word.word?word.word:'শব্দ পাওয়া যায়নি'}</h2>
+    <h2 class="font-bold text-xl md:text-2xl">${word.word ? word.word : "শব্দ পাওয়া যায়নি"}</h2>
     <p class="font-semibold">Meaning /Pronounciation</p>
-    <div class="text-xl md:text-2xl font-bangla">"${word.meaning?word.meaning:'অর্থ পাওয়া যায়নি'} / ${word.pronunciation?word.pronunciation:'pronunciation পাওয়া যায়নি'}"</div>
+    <div class="text-xl md:text-2xl font-bangla">"${word.meaning ? word.meaning : "অর্থ পাওয়া যায়নি"} / ${word.pronunciation ? word.pronunciation : "pronunciation পাওয়া যায়নি"}"</div>
 
     <div class="flex justify-between items-center">
       <button
         class="btn bg-[#1A91FF15] hover:bg-[#1A91FF80] hover:rounded-full w-10 h-10"
       >
-        <i class="fa-solid fa-circle-info"></i>
+        <i onclick="loadWordDetails(${word.id})" class="fa-solid fa-circle-info"></i>
       </button>
       <button
         class="btn bg-[#1A91FF15] hover:bg-[#1A91FF80] hover:rounded-full w-10 h-10"
@@ -56,9 +61,59 @@ const displayLevelWords = (words) => {
       </button>
     </div>
   </div>
-    `
-    wordContainer.append(card)
+    `;
+    wordContainer.append(card);
   });
+};
+
+const loadWordDetails = async (id) => {
+  const url = `https://openapi.programming-hero.com/api/word/${id}`;
+  const res = await fetch(url);
+  const details = await res.json();
+  displayWordsDetails(details.data);
+};
+
+// {
+//     "status": true,
+//     "message": "successfully fetched a word details",
+//     "data": {
+//         "word": "Abundant",
+//         "meaning": null,
+//         "pronunciation": "অবানডান্ট",
+//         "level": 3,
+//         "sentence": "Water is abundant in rainy seasons.",
+//         "points": 3,
+//         "synonyms": [],
+//         "id": 1
+//     }
+// }
+
+const displayWordsDetails = (word) => {
+  console.log(word);
+  console.log(word.word);
+  const detailsContainer = document.getElementById("detailsContainer");
+  detailsContainer.innerHTML = `
+  <div class="">
+            <h2 class="text-xl md:text-2xl font-bold">
+              ${word.word} (<i class="fa-solid fa-microphone-lines"></i>:${word.pronunciation})
+            </h2>
+          </div>
+          <div class="">
+            <h2>Meaning</h2>
+            <p>${word.meaning ? word.meaning : "No mining"}</p>
+          </div>
+          <div>
+            <h2>Example</h2>
+            <p>${word.sentence}</p>
+          </div>
+          <div>
+            <h2>সমার্থক শব্দ গুলো</h2>
+            <div class="flex gap-2">
+              ${createElement(word.synonyms)}
+            </div>
+          </div>
+  `;
+  document.getElementById("word_modal").showModal();
 };
 
 const displayLessons = (lessons) => {
