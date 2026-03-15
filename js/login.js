@@ -21,7 +21,8 @@ function errorFunc(text, type) {
   }
 }
 
-document.getElementById("login").addEventListener("click", () => {
+document.getElementById("login").addEventListener("click", (e) => {
+    e.preventDefault()
   const inputValue = input.value.trim();
   const passwordValue = password.value;
 
