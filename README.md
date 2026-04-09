@@ -53,5 +53,5 @@ This project was built as my early learning project to practice JavaScript DOM m
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/english-janala.git
+   git clone https://github.com/amirulislambd/English-janala.git
    cd english-janala
